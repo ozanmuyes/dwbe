@@ -14,13 +14,13 @@ App\Http\Middleware\Authenticate.handle | UnauthorizedException | no auth. heade
 
 
 
-
+App\Http\Controllers\Api\v1\TokenController.refresh | BadRequestException | access or refresh token wasn't given
 
 App\Http\Middleware\ContentNegotiation.handle | NotAcceptableException | doesn't accept json as response
 
 
 
-
+App\Http\Controllers\Api\v1\TokenController.create | BadRequestException | existing password hash check failed with given
 
 
 
@@ -42,6 +42,7 @@ App\Http\Middleware\ContentNegotiation.handle | NotAcceptableException | doesn't
 
 App\Http\Middleware\ContentNegotiation.handle | NotAcceptableException | method has body but not as json
 
+App\Http\Controllers\Api\v1\TokenController.refresh | TokenParseException | token was malformed (i.e. token string MUST have 2 dots)
 
 
 
@@ -63,6 +64,5 @@ App\Http\Middleware\ContentNegotiation.handle | NotAcceptableException | method 
 
 
 
-
-
+App\Http\Controllers\Api\v1\TokenController.refresh | TokenParseException | cannot encode token as json
 App\Http\Controllers\Api\v1\TokenController.create | BadRequestException | no email on request body

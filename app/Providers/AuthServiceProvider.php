@@ -39,7 +39,7 @@ class AuthServiceProvider extends ServiceProvider
         // the User instance via an API token or any other method necessary.
 
         Auth::viaRequest('api', function (Request $request) {
-            // Extract token from header
+            // Extract (access) token from header
             //
             $matches = [];
             preg_match('/^Bearer (\w.+)$/', $request->header('Authorization'), $matches);
@@ -54,7 +54,7 @@ class AuthServiceProvider extends ServiceProvider
             $parser = new Parser();
             $token = $parser->parse($tokenString);
 
-            // Verify
+            // Verify the (access) token
             //
             /**
              * @var \Lcobucci\JWT\Signer $signer
@@ -64,10 +64,8 @@ class AuthServiceProvider extends ServiceProvider
                 return null;
             }
 
-            // Validate
+            // Validate the (access) token
             //
-            // TODO Check JWT token if valid \
-            //      See https://github.com/lcobucci/jwt/blob/3.2/README.md#validating
             $validationData = new ValidationData();
 
             // FIXME Move these checks somewhere else
@@ -87,19 +85,12 @@ class AuthServiceProvider extends ServiceProvider
                 return null;
             }
 
-            // Gather (generic) user
+            // Create (generic) user
             //
-            /**
-             * @var $user \Illuminate\Auth\GenericUser
-             */
-            $user = null;
-
-            if ($token) {
-                $user = new GenericUser([
-                    'id' => $token->getClaim('sub'),
-                    // TODO Add other claims here
-                ]);
-            }
+            $user = new GenericUser([
+                'id' => $token->getClaim('sub'),
+                // TODO Add other claims here
+            ]);
 
             return $user;
         });

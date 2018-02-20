@@ -22,8 +22,10 @@ $router->get('/', function () use ($router) {
 
 $router->group(['prefix' => 'api', 'namespace' => 'Api', 'middleware' => 'negotiation'], function () use ($router) {
     $router->group(['prefix' => 'v1', 'namespace' => 'v1'], function () use ($router) {
-        $router->post('token', 'TokenController@create'); // login
-        $router->delete('token', ['middleware' => 'auth', 'uses' => 'TokenController@delete']); // logout
+        $router->post('token', 'TokenController@create');
+        $router->delete('token', ['middleware' => 'auth', 'uses' => 'TokenController@delete']);
+
+        $router->put('token', 'TokenController@refresh');
 
         $router->group(['prefix' => 'users', 'middleware' => 'auth'], function () use ($router) {
             $router->get('/', 'UserController@index');

@@ -17,7 +17,7 @@ class ContentNegotiation
      */
     public function handle(Request $request, \Closure $next)
     {
-        if (in_array($request->method(), ['POST', 'PUT'])) {
+        if (in_array($request->method(), ['POST', 'PUT', 'PATCH'])) {
             if (!$request->isJson()) {
                 throw new NotAcceptableException(43, 'Body content type wasn\'t specified or invalid.');
             }
