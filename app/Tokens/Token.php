@@ -2,7 +2,6 @@
 
 namespace App\Tokens;
 
-use Cake\Core\Configure;
 use Lcobucci\JWT\Builder;
 
 abstract class Token
@@ -61,7 +60,7 @@ abstract class Token
      */
     public function __construct($customClaims = [])
     {
-        $this->_issuer = Configure::read('Security.token.issuer', null);
+        $this->_issuer = env('APP_NAME');
         if ($this->_issuer === null) {
             throw new \Exception('Token issuer MUST be set.');
         }
@@ -115,7 +114,7 @@ abstract class Token
             } // else do NOT set expiration
 
             $this->_signed_token_string = $this->_builder
-                ->sign(new \Lcobucci\JWT\Signer\Hmac\Sha256(), Configure::read('Security.token.secret'))
+                ->sign(new \Lcobucci\JWT\Signer\Hmac\Sha256(), env('JWT_SECRET', env('APP_KEY')))
                 ->getToken();
         }
 

@@ -47,7 +47,7 @@ class TokenController extends Controller
             throw new BadRequestException(23);
         }
 
-        // TODO Create tokens
+        // Create tokens
         //
         /**
          * @var \App\Tokens\AccessToken $accessToken
@@ -71,8 +71,8 @@ class TokenController extends Controller
 
         return response()->json([
             'data' => [
-                'access_token' => $accessToken,
-                'refresh_token' => $refreshToken,
+                'access_token' => (string) $accessToken,
+                'refresh_token' => (string) $refreshToken,
             ],
         ], 201);
     }

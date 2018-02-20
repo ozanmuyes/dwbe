@@ -3,7 +3,6 @@
 namespace App\Tokens;
 
 use App\User;
-use Cake\Core\Configure;
 
 class PasswordSetToken extends Token implements HasLifetime
 {
@@ -33,7 +32,7 @@ class PasswordSetToken extends Token implements HasLifetime
     {
         $this->_subject = (string) $user->id;
 
-        $this->setLifetime((int) Configure::read("Security.token.{$this->_type}.lifetime"));
+        $this->setLifetime((int) env('JWT_PWS_LIFE'));
 
         parent::__construct($customClaims);
 

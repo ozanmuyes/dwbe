@@ -3,7 +3,6 @@
 namespace App\Tokens;
 
 use App\User;
-use Cake\Core\Configure;
 
 class AccessToken extends Token implements HasLifetime
 {
@@ -38,7 +37,7 @@ class AccessToken extends Token implements HasLifetime
         $this->_subject = (string) $user->id;
         $this->_audience = $this->filterForAllowedAudiences($audience);
 
-        $this->setLifetime((int) Configure::read("Security.token.{$this->_type}.lifetime"));
+        $this->setLifetime((int) env('JWT_ACC_LIFE'));
 
         parent::__construct($customClaims);
 
