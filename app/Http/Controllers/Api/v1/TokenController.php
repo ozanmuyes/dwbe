@@ -10,15 +10,14 @@ use Illuminate\Http\Request;
 
 class TokenController extends Controller
 {
-    // login
     /**
      * Try to create access and refresh tokens for the user via
      * given credentials. If user not found or credentials
      * invalid response with error.
      *
-     * @param Request $request
-     * @throws UnauthorizedException
-     * @throws BadRequestException
+     * @param \Illuminate\Http\Request $request
+     * @throws \App\Exceptions\BadRequestException
+     * @throws \App\Exceptions\UnauthorizedException
      */
     public function create(Request $request)
     {

@@ -2,12 +2,7 @@
 
 namespace App\Exceptions;
 
-use Exception;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -17,10 +12,10 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        AuthorizationException::class,
-        HttpException::class,
-        ModelNotFoundException::class,
-        ValidationException::class,
+        \Illuminate\Auth\Access\AuthorizationException::class,
+        \Symfony\Component\HttpKernel\Exception\HttpException::class,
+        \Illuminate\Database\Eloquent\ModelNotFoundException::class,
+        \Illuminate\Validation\ValidationException::class,
     ];
 
     /**
@@ -30,9 +25,9 @@ class Handler extends ExceptionHandler
      *
      * @param  \Exception $e
      * @return void
-     * @throws Exception
+     * @throws \Exception
      */
-    public function report(Exception $e)
+    public function report(\Exception $e)
     {
         parent::report($e);
     }
@@ -44,39 +39,80 @@ class Handler extends ExceptionHandler
      * @param  \Exception  $e
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $e)
+    public function render($request, \Exception $e)
     {
-        switch (true) {
-            case ($e instanceof ApiException):
-                return ($request->expectsJson())
-                    ? $this->renderForApi($request, $e)
-                    : view('Errors.' . $e->getCode()); // FIXME HTTP status code is 200 - which SHOULD be 503
-
-            // TODO else if ($e instanceof Laravel-/LumenException) (e.g. ModelNotFoundException)
-            case ($e instanceof \Illuminate\Database\Eloquent\ModelNotFoundException): {
-                // TODO return ...
-            }
-
-            //
-        }
-
-        return parent::render($request, $e);
-    }
-
-    private function renderForApi(\Illuminate\Http\Request $request, ApiException $e)
-    {
+        // Set default values for the error (array)
+        //
         $error = [
-            'status' => $e->getCode(),
-            'message' => $e->getMessage(),
+            'status' => 500,
+            'message' => 'Internal Server Error',
+            // 'code'
+            // 'details'
             //
         ];
-        if ($e->hasAppCode()) {
-            $error['code'] = (string) $e->getAppCode();
-        }
-        if ($e->hasDetails() && env('APP_DEBUG', false) === true) {
-            $error['details'] = $e->getDetails();
+
+        /**
+         * Force to send JSON response regardless of Accept header.
+         *
+         * @var bool $forceJson
+         */
+        $forceJson = false;
+
+        // Try to map exception to error (array)
+        //
+        if ($e instanceof ApiException) {
+            /**
+             * @var ApiException $e
+             */
+
+            $error['status'] = $e->getCode();
+            $error['message'] = $e->getMessage();
+            //
+
+            if ($e->hasAppCode()) {
+                $error['code'] = (string) $e->getAppCode();
+            }
+            if ($e->hasDetails() && env('APP_DEBUG', false) === true) {
+                $error['details'] = $e->getDetails();
+            }
+            //
+
+            // Since this is an API exception;
+            $forceJson = true;
+        } else if ($e instanceof \Symfony\Component\HttpKernel\Exception\HttpException) {
+            /**
+             * @var \Symfony\Component\HttpKernel\Exception\HttpException $e
+             */
+
+            $error['status'] = $e->getStatusCode();
+            $error['message'] = $e->getMessage();
+            //
+
+            //
+        } else if ($e instanceof \Illuminate\Database\Eloquent\ModelNotFoundException) {
+            /**
+             * @var \Illuminate\Database\Eloquent\ModelNotFoundException $e
+             */
+
+            $error['status'] = 404;
+            $error['message'] = 'Not Found';
+            //
+
+            if (env('APP_DEBUG', false) === true) {
+                $error['details'] = $e->getMessage();
+            }
+            //
+        } else { // TODO else if ($e instanceof Laravel-/LumenException) (e.g. \Illuminate\Database\Eloquent\ModelNotFoundException)
+            $error = null;
         }
 
-        return response()->json(['error' => $error], $e->getCode());
+        // Exception couldn't be mapped, fallback to framework's renderer
+        if ($error === null) {
+            return parent::render($request, $e);
+        }
+
+        return ($request->expectsJson() || $forceJson === true)
+            ? response()->json(['error' => $error], $error['status'])
+            : view('Errors.' . $error['status'], $error); // NOTE This might throw view not found error
     }
 }

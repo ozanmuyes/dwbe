@@ -19,6 +19,9 @@ try {
 |
 */
 
+/**
+ * @var Laravel\Lumen\Application $app
+ */
 $app = new Laravel\Lumen\Application(
     realpath(__DIR__.'/../')
 );

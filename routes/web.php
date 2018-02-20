@@ -12,15 +12,12 @@
 */
 
 /**
- * @var $router \Laravel\Lumen\Routing\Router
+ * @var $router Laravel\Lumen\Routing\Router
  */
 
 $router->get('/', function () use ($router) {
-//    throw new \App\Exceptions\ExampleException();
-//    throw new \App\Exceptions\ExampleException('foo', 13);
-
-    // TODO Send front-end application
-    return $router->app->version();
+    // Send front-end application
+    return file_get_contents(base_path('public/index.html'));
 });
 
 $router->group(['prefix' => 'api', 'namespace' => 'Api', 'middleware' => 'negotiation'], function () use ($router) {

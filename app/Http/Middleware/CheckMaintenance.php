@@ -3,7 +3,6 @@
 namespace App\Http\Middleware;
 
 use App\Exceptions\ServiceUnavailableException;
-use Closure;
 use Illuminate\Http\Request;
 
 class CheckMaintenance
@@ -16,7 +15,7 @@ class CheckMaintenance
      * @return mixed
      * @throws \App\Exceptions\ServiceUnavailableException
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, \Closure $next)
     {
         if (env('APP_MAINTENANCE', false) === true) {
             throw new ServiceUnavailableException();

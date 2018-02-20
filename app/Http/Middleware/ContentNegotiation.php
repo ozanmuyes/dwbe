@@ -3,7 +3,6 @@
 namespace App\Http\Middleware;
 
 use App\Exceptions\NotAcceptableException;
-use Closure;
 use Illuminate\Http\Request;
 
 class ContentNegotiation
@@ -16,10 +15,16 @@ class ContentNegotiation
      * @return mixed
      * @throws \App\Exceptions\NotAcceptableException
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, \Closure $next)
     {
+        if (in_array($request->method(), ['POST', 'PUT'])) {
+            if (!$request->isJson()) {
+                throw new NotAcceptableException(43, 'Body content type wasn\'t specified or invalid.');
+            }
+        }
+
         if (!$request->expectsJson()) {
-            throw new NotAcceptableException();
+            throw new NotAcceptableException(19, 'Accept header is missing or invalid.');
         }
 
         return $next($request);
