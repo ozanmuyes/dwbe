@@ -15,6 +15,17 @@ use Lcobucci\JWT\Parser;
 
 class TokenController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth', ['except' => [
+            'create',
+            'refresh',
+            //
+        ]]);
+
+        //
+    }
+
     /**
      * Try to create access and refresh tokens for the user via
      * given credentials. If user not found or credentials

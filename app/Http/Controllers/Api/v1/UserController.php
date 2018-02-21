@@ -9,6 +9,16 @@ use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth', ['except' => [
+            'create',
+            //
+        ]]);
+
+        //
+    }
+
     /**
      * List all the users.
      *
