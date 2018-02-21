@@ -20,6 +20,8 @@ $router->get('/', function () use ($router) {
     return file_get_contents(base_path('public/index.html'));
 });
 
+// TODO Specify middlewares within the controllers \
+//      See https://lumen.laravel.com/docs/5.6/controllers#controller-middleware
 $router->group(['prefix' => 'api', 'namespace' => 'Api', 'middleware' => 'negotiation'], function () use ($router) {
     $router->group(['prefix' => 'v1', 'namespace' => 'v1'], function () use ($router) {
         $router->post('token', 'TokenController@create');
@@ -29,16 +31,24 @@ $router->group(['prefix' => 'api', 'namespace' => 'Api', 'middleware' => 'negoti
 
         $router->group(['prefix' => 'users', 'middleware' => 'auth'], function () use ($router) {
             $router->get('/', 'UserController@index');
-            //
+//            $router->post('/', 'UserController@create');
         });
+        $router->post('users', 'UserController@create');
     });
 
     // NOTE Add other versions (e.g. 'v2', 'v3' or default; without prefix) here
 });
 
 $router->get('/authenticated', ['middleware' => 'auth', function () use ($router) {
+    /**
+     * @var \Illuminate\Auth\GenericUser $user
+     */
+    $user = Auth::user();
+
     return response()->json([
-        'auth' => Auth::user(),
-        //
+        'data' => [
+            'user' => ((array) $user)["\0*\0attributes"],
+            //
+        ],
     ]);
 }]);

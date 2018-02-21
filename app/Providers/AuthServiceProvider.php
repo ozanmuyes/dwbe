@@ -5,10 +5,10 @@ namespace App\Providers;
 use Auth;
 use Illuminate\Auth\GenericUser;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
-use Lcobucci\JWT\ValidationData;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -21,6 +21,10 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->app->singleton('JwtSigner', function () {
             return new Sha256();
+        });
+
+        Gate::define('index-users', function (GenericUser $user) {
+            return ($user->role === 'admin');
         });
 
         //
@@ -40,6 +44,7 @@ class AuthServiceProvider extends ServiceProvider
 
         Auth::viaRequest('api', function (Request $request) {
             // Extract (access) token from header
+            // FIXME Use `$request->bearerToken`
             //
             $matches = [];
             preg_match('/^Bearer (\w.+)$/', $request->header('Authorization'), $matches);
@@ -60,35 +65,54 @@ class AuthServiceProvider extends ServiceProvider
              * @var \Lcobucci\JWT\Signer $signer
              */
             $signer = $this->app->make('JwtSigner');
-            if (!$token->verify($signer, env('APP_KEY'))) {
+            if (!$token->verify($signer, env('JWT_SECRET', env('APP_KEY')))) {
                 return null;
             }
 
+            // FIXME Move validation logic to somewhere else (i.e. App\Tokens\Validator)
+            // TODO Also check if token type ('ttp' claim) (e.g. 'access', 'refresh' etc.)
             // Validate the (access) token
             //
-            $validationData = new ValidationData();
+//            $validationData = new ValidationData();
+//
+//            // FIXME Move these checks somewhere else
+//            $allowedIssuers = env('JWT_ISS', null);
+//            if ($allowedIssuers === null) {
+//                \Log::warning('JWT_ISS was\'t set, in order to correctly validate JWT tokens it MUST be set.');
+//            }
+//            $appName = env('APP_NAME', null);
+//            if ($appName === null) {
+//                \Log::warning('APP_NAME was\'t set, in order to correctly validate JWT tokens it MUST be set.');
+//            }
+//
+//            $validationData->setIssuer($allowedIssuers);
+//            $validationData->setAudience($appName);
+//
+//            if (!$token->validate($validationData)) {
+//                return null;
+//            }
 
-            // FIXME Move these checks somewhere else
-            $allowedIssuers = env('JWT_ISS', null);
-            if ($allowedIssuers === null) {
-                \Log::warning('JWT_ISS was\'t set, in order to correctly validate JWT tokens it MUST be set.');
-            }
-            $appName = env('APP_NAME', null);
-            if ($appName === null) {
-                \Log::warning('APP_NAME was\'t set, in order to correctly validate JWT tokens it MUST be set.');
-            }
-
-            $validationData->setIssuer($allowedIssuers);
-            $validationData->setAudience($appName);
-
-            if (!$token->validate($validationData)) {
-                return null;
-            }
+            // TODO Activate this check
+//            if ($token->isExpired()) {
+//                return null;
+//            }
 
             // Create (generic) user
             //
+            $claims = $token->getClaims();
+
+            if (
+                !$token->hasClaim('sub') ||
+                !$token->hasClaim('rol') ||
+                //
+                false
+            ) {
+                return null;
+            }
+
             $user = new GenericUser([
-                'id' => $token->getClaim('sub'),
+                'id' => (int) $token->getClaim('sub'),
+                'role' => $token->getClaim('rol'),
                 // TODO Add other claims here
             ]);
 

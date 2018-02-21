@@ -9,7 +9,7 @@ class Handler extends ExceptionHandler
     protected $httpStatusCodes = [
         100 => 'Continue',
         101 => 'Switching Protocols',
-//        102 => 'Processing', // WebDAV; RFC 2518
+        102 => 'Processing', // WebDAV; RFC 2518
         200 => 'OK',
         201 => 'Created',
         202 => 'Accepted',
@@ -17,8 +17,8 @@ class Handler extends ExceptionHandler
         204 => 'No Content',
         205 => 'Reset Content',
         206 => 'Partial Content',
-//        207 => 'Multi-Status', // WebDAV; RFC 4918
-//        208 => 'Already Reported', // WebDAV; RFC 5842
+        207 => 'Multi-Status', // WebDAV; RFC 4918
+        208 => 'Already Reported', // WebDAV; RFC 5842
         226 => 'IM Used', // RFC 3229
         300 => 'Multiple Choices',
         301 => 'Moved Permanently',
@@ -51,9 +51,9 @@ class Handler extends ExceptionHandler
 //        419 => 'Authentication Timeout', // not in RFC 2616
 //        420 => 'Enhance Your Calm', // Twitter
 //        420 => 'Method Failure', // Spring Framework
-//        422 => 'Unprocessable Entity', // WebDAV; RFC 4918
-//        423 => 'Locked', // WebDAV; RFC 4918
-//        424 => 'Failed Dependency', // WebDAV; RFC 4918
+        422 => 'Unprocessable Entity', // WebDAV; RFC 4918
+        423 => 'Locked', // WebDAV; RFC 4918
+        424 => 'Failed Dependency', // WebDAV; RFC 4918
 //        424 => 'Method Failure', // WebDAV)
         425 => 'Unordered Collection', // Internet draft
         426 => 'Upgrade Required', // RFC 2817
@@ -77,8 +77,8 @@ class Handler extends ExceptionHandler
         504 => 'Gateway Timeout',
         505 => 'HTTP Version Not Supported',
         506 => 'Variant Also Negotiates', // RFC 2295
-//        507 => 'Insufficient Storage', // WebDAV; RFC 4918
-//        508 => 'Loop Detected', // WebDAV; RFC 5842
+        507 => 'Insufficient Storage', // WebDAV; RFC 4918
+        508 => 'Loop Detected', // WebDAV; RFC 5842
 //        509 => 'Bandwidth Limit Exceeded', // Apache bw/limited extension
         510 => 'Not Extended', // RFC 2774
         511 => 'Network Authentication Required', // RFC 6585
@@ -125,7 +125,9 @@ class Handler extends ExceptionHandler
         //
         $error = [
             'status' => 500,
-            'message' => 'Internal Server Error',
+            // NOTE Use empty string as default 'message' since post-process
+            //      assigns the 'message' considering (HTTP) status code.
+            'message' => '',
             // 'code'
             // 'details'
             //
@@ -137,6 +139,11 @@ class Handler extends ExceptionHandler
          * @var bool $forceJson
          */
         $forceJson = false;
+
+        /**
+         * @var bool $isDebug
+         */
+        $isDebug = env('APP_DEBUG', false);
 
         // Try to map exception to error (array)
         //
@@ -152,7 +159,7 @@ class Handler extends ExceptionHandler
             if ($e->hasAppCode()) {
                 $error['code'] = (string) $e->getAppCode();
             }
-            if ($e->hasDetails() && env('APP_DEBUG', false) === true) {
+            if ($e->hasDetails() && $isDebug === true) {
                 $error['details'] = $e->getDetails();
             }
             //
@@ -175,11 +182,48 @@ class Handler extends ExceptionHandler
              */
 
             $error['status'] = 404;
-            $error['message'] = 'Not Found';
+            $error['message'] = 'Not Found'; // FIXME Remove this line after testing
             //
 
-            if (env('APP_DEBUG', false) === true) {
+            if ($isDebug === true) {
                 $error['details'] = $e->getMessage();
+            }
+            //
+        } else if ($e instanceof \Illuminate\Database\Eloquent\MassAssignmentException) {
+            /**
+             * @var \Illuminate\Database\Eloquent\MassAssignmentException $e
+             */
+
+            $error['status'] = 400;
+            //
+
+            if ($isDebug) {
+                $error['details'] = $e->getMessage();
+            }
+            //
+        } else if ($e instanceof \Illuminate\Database\QueryException) {
+            /**
+             * @var \Illuminate\Database\QueryException $e
+             */
+
+            $error['status'] = 400;
+            //
+
+            if ($isDebug) {
+                $error['details'] = $e->getMessage();
+            }
+            //
+        } else if ($e instanceof \Illuminate\Validation\ValidationException) {
+            /**
+             * @var \Illuminate\Validation\ValidationException $e
+             */
+
+            $error['status'] = 422;
+            //
+
+            if ($isDebug) {
+                $error['details'] = $e->getMessage();
+                $error['additional'] = ((array) $e->response->getData());
             }
             //
         } else { // TODO else if ($e instanceof Laravel-/LumenException) (e.g. \Illuminate\Database\Eloquent\ModelNotFoundException)

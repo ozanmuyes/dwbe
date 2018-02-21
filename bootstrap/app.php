@@ -63,7 +63,7 @@ $app->singleton(
 */
 
 $app->middleware([
-    App\Http\Middleware\CheckMaintenance::class,
+    App\Http\Middleware\CheckForMaintenanceMode::class,
     // App\Http\Middleware\ExampleMiddleware::class,
     //
 ]);

@@ -55,7 +55,7 @@ App\Http\Controllers\Api\v1\TokenController.refresh | TokenParseException | toke
 
 
 
-
+App\Http\Controllers\Api\v1\UserController.index | UnauthorizedException | gate denies the user to take that action
 
 
 

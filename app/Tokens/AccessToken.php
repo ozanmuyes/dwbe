@@ -17,8 +17,7 @@ class AccessToken extends Token implements HasLifetime
     protected $_type = 'access';
 
     protected $_audience_allowed = [
-        'app://yeppa-front',
-        'srv://yeppa-wss',
+        'app://dwfe',
         //
     ];
 

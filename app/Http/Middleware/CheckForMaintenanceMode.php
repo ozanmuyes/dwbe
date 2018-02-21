@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use App\Exceptions\ServiceUnavailableException;
 use Illuminate\Http\Request;
 
-class CheckMaintenance
+class CheckForMaintenanceMode
 {
     /**
      * Handle an incoming request.
