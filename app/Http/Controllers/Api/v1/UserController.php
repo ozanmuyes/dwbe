@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Exceptions\UnauthorizedException;
 use App\Http\Controllers\Controller;
-use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
@@ -54,7 +53,7 @@ class UserController extends Controller
         //
         $user = @$request->user();
 
-        // FIXME When role input is unset, `newUser` below won't have the 'role' attribute
+        // FIXME When role input was unset, the `$newUser` below won't have the 'role' attribute
         if ($user === null) {
             // User self registering - use database default
             unset($newUserAttributes['role']);
@@ -70,9 +69,27 @@ class UserController extends Controller
 
         // Try to create the user and respond with it
         //
-        $newUser = new User($newUserAttributes);
+        $newUser = new \App\User($newUserAttributes);
         $newUser->saveOrFail();
 
         return response()->json(['data' => $newUser], 201);
+    }
+
+    /**
+     * View user via its database ID.
+     *
+     * @param int $id User ID to view
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Exceptions\UnauthorizedException
+     */
+    public function view(int $id)
+    {
+        if (Gate::denies('view-user', $id)) {
+            throw new UnauthorizedException(33);
+        }
+
+        $user = \App\User::findOrFail($id);
+
+        return response()->json(['data' => $user]);
     }
 }

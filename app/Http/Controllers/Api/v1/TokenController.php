@@ -54,6 +54,7 @@ class TokenController extends Controller
          */
         $accessToken = null;
         try {
+            // TODO Consider 'for' field for the token audience
             $accessToken = new AccessToken($user, 'app://dwfe');
         } catch (\Exception $e) {
             // TODO throw custom (API) exception
@@ -101,13 +102,12 @@ class TokenController extends Controller
             throw new BadRequestException(17);
         }
 
-        $parser = new Parser();
         /**
          * @var \Lcobucci\JWT\Token $refreshToken
          */
         $refreshToken = null;
         try {
-            $refreshToken = $parser->parse($tokens['refresh_token']);
+            $refreshToken = (new Parser())->parse($tokens['refresh_token']);
         } catch (\InvalidArgumentException $e) {
             throw new TokenParseException(45);
         } catch (\Exception $e) {

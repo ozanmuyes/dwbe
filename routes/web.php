@@ -15,7 +15,8 @@
  * @var $router Laravel\Lumen\Routing\Router
  */
 
-$router->get('/', function () use ($router) {
+// TODO Move this to FrontController
+$router->get('/', function () {
     // Send front-end application
     return file_get_contents(base_path('public/index.html'));
 });
@@ -31,7 +32,8 @@ $router->group(['prefix' => 'api', 'namespace' => 'Api', 'middleware' => 'negoti
 
         $router->group(['prefix' => 'users', 'middleware' => 'auth'], function () use ($router) {
             $router->get('/', 'UserController@index');
-//            $router->post('/', 'UserController@create');
+
+            $router->get('{id}', 'UserController@view');
         });
         $router->post('users', 'UserController@create');
     });
@@ -39,9 +41,9 @@ $router->group(['prefix' => 'api', 'namespace' => 'Api', 'middleware' => 'negoti
     // NOTE Add other versions (e.g. 'v2', 'v3' or default; without prefix) here
 });
 
-$router->get('/authenticated', ['middleware' => 'auth', function () use ($router) {
+$router->get('/authenticated', ['middleware' => 'auth', function () {
     /**
-     * @var \Illuminate\Auth\GenericUser $user
+     * @var \App\TokenUser $user
      */
     $user = Auth::user();
 

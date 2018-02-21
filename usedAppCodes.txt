@@ -30,7 +30,7 @@ App\Http\Controllers\Api\v1\TokenController.create | BadRequestException | exist
 
 
 
-
+App\Http\Controllers\Api\v1\UserController.view | UnauthorizedException | gate denies the user to take that action
 
 
 

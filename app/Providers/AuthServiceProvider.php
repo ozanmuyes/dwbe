@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
+use App\TokenUser;
 use Auth;
-use Illuminate\Auth\GenericUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -23,8 +23,16 @@ class AuthServiceProvider extends ServiceProvider
             return new Sha256();
         });
 
-        Gate::define('index-users', function (GenericUser $user) {
+        Gate::define('index-users', function (TokenUser $user) {
             return ($user->role === 'admin');
+        });
+
+        Gate::define('view-user', function (TokenUser $user, $targetUserId) {
+            return (
+                $user->role === 'admin' ||
+                $user->role === 'mod' ||
+                $user->id === $targetUserId
+            );
         });
 
         //
@@ -50,7 +58,15 @@ class AuthServiceProvider extends ServiceProvider
                 return null;
             }
 
-            $token = (new Parser())->parse($tokenFromHeader);
+            /**
+             * @var \Lcobucci\JWT\Token $token
+             */
+            $token = null;
+            try {
+                $token = (new Parser())->parse($tokenFromHeader);
+            } catch (\Exception $e) {
+                return null;
+            }
 
             // Verify the (access) token
             //
@@ -101,10 +117,10 @@ class AuthServiceProvider extends ServiceProvider
                 return null;
             }
 
-            $user = new GenericUser([
+            $user = new TokenUser([
                 'id' => (int) $token->getClaim('sub'),
                 'role' => $token->getClaim('rol'),
-                // TODO Add other claims here
+                // TODO Add other claims here - don't forget to update TokenUser read-only properties
             ]);
 
             return $user;

@@ -182,7 +182,6 @@ class Handler extends ExceptionHandler
              */
 
             $error['status'] = 404;
-            $error['message'] = 'Not Found'; // FIXME Remove this line after testing
             //
 
             if ($isDebug === true) {

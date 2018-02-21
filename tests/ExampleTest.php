@@ -14,6 +14,7 @@ class ExampleTest extends TestCase
     {
         $this->get('/');
 
+        // FIXME Fix this test and write more tests
         $this->assertEquals(
             $this->app->version(), $this->response->getContent()
         );
