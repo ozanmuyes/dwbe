@@ -43,21 +43,14 @@ class AuthServiceProvider extends ServiceProvider
         // the User instance via an API token or any other method necessary.
 
         Auth::viaRequest('api', function (Request $request) {
-            // Extract (access) token from header
-            // FIXME Use `$request->bearerToken`
+            // Get and parse the (access) token
             //
-            $matches = [];
-            preg_match('/^Bearer (\w.+)$/', $request->header('Authorization'), $matches);
-            if (count($matches) < 2) { // No token on (authorization) header
+            $tokenFromHeader = $request->bearerToken();
+            if ($tokenFromHeader === null) {
                 return null;
             }
 
-            /**
-             * @var $tokenString string
-             */
-            $tokenString = $matches[1];
-            $parser = new Parser();
-            $token = $parser->parse($tokenString);
+            $token = (new Parser())->parse($tokenFromHeader);
 
             // Verify the (access) token
             //
@@ -97,10 +90,8 @@ class AuthServiceProvider extends ServiceProvider
 //                return null;
 //            }
 
-            // Create (generic) user
+            // Create (generic) user if required claims exists
             //
-            $claims = $token->getClaims();
-
             if (
                 !$token->hasClaim('sub') ||
                 !$token->hasClaim('rol') ||

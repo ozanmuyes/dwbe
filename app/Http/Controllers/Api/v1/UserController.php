@@ -14,7 +14,7 @@ class UserController extends Controller
      * List all the users.
      *
      * @return \Illuminate\Http\JsonResponse
-     * @throws UnauthorizedException
+     * @throws \App\Exceptions\UnauthorizedException
      */
     public function index()
     {
@@ -41,7 +41,6 @@ class UserController extends Controller
     {
         // Since everyone can create user, do NOT check for Gate
 
-        // FIXME Exclude query string parameters (if any)
         $newUserAttributes = $this->validate($request, [
             'email' => 'required',
             'password' => 'required',
