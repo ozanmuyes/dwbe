@@ -15,16 +15,17 @@
  * @var $router Laravel\Lumen\Routing\Router
  */
 
-$router->get('/', function () {
-    // Send front-end (website) application
-    return file_get_contents(base_path('public/index.html'));
-});
-
-// NOTE Change the path ('/panel') as desired, also set Vue.js Router's `basePath` accordingly
-$router->get('/panel', function () {
-    // Send front-end (control panel) application
-    return file_get_contents(base_path('public/panel/index.html'));
-});
+// NOTE These (front-end application) routes has been commented out in favor of OpenResty (NGINX).
+//$router->get('/', function () {
+//    // Send front-end (website) application
+//    return file_get_contents(base_path('public/index.html'));
+//});
+//
+//// NOTE Change the path ('/panel') as desired, also set Vue.js Router's `basePath` accordingly
+//$router->get('/panel', function () {
+//    // Send front-end (control panel) application
+//    return file_get_contents(base_path('public/panel/index.html'));
+//});
 
 $router->group(['prefix' => 'api', 'namespace' => 'Api', 'middleware' => 'negotiation'], function () use ($router) {
     $router->group(['prefix' => 'v1', 'namespace' => 'v1'], function () use ($router) {
@@ -39,3 +40,18 @@ $router->group(['prefix' => 'api', 'namespace' => 'Api', 'middleware' => 'negoti
 
     // NOTE Add other versions (e.g. 'v2', 'v3' or default; without prefix) here
 });
+
+// ----- REDIS TEST ----- REDIS TEST ----- REDIS TEST ----- REDIS TEST ----- REDIS TEST ----- REDIS TEST -----
+$router->get('/api/ctr', function() {
+//    $ctr = Cache::get('ctr');
+
+//    Redis::incr('laravel:ctr');
+    $ctr = \Illuminate\Support\Facades\Redis::get('laravel:ctr');
+
+    return "Result: '$ctr'";
+});
+
+$router->get('/api/pub', function() {
+    \Illuminate\Support\Facades\Redis::publish('test', json_encode(['foo' => 'bar']));
+});
+// ----- REDIS TEST ----- REDIS TEST ----- REDIS TEST ----- REDIS TEST ----- REDIS TEST ----- REDIS TEST -----

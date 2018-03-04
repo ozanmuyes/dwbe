@@ -166,7 +166,8 @@ class Handler extends ExceptionHandler
 
             // Since this is an API exception;
             $forceJson = true;
-        } else if ($e instanceof \Symfony\Component\HttpKernel\Exception\HttpException) {
+        }
+        else if ($e instanceof \Symfony\Component\HttpKernel\Exception\HttpException) {
             /**
              * @var \Symfony\Component\HttpKernel\Exception\HttpException $e
              */
@@ -176,7 +177,8 @@ class Handler extends ExceptionHandler
             //
 
             //
-        } else if ($e instanceof \Illuminate\Database\Eloquent\ModelNotFoundException) {
+        }
+        else if ($e instanceof \Illuminate\Database\Eloquent\ModelNotFoundException) {
             /**
              * @var \Illuminate\Database\Eloquent\ModelNotFoundException $e
              */
@@ -188,7 +190,8 @@ class Handler extends ExceptionHandler
                 $error['details'] = $e->getMessage();
             }
             //
-        } else if ($e instanceof \Illuminate\Database\Eloquent\MassAssignmentException) {
+        }
+        else if ($e instanceof \Illuminate\Database\Eloquent\MassAssignmentException) {
             /**
              * @var \Illuminate\Database\Eloquent\MassAssignmentException $e
              */
@@ -200,7 +203,8 @@ class Handler extends ExceptionHandler
                 $error['details'] = $e->getMessage();
             }
             //
-        } else if ($e instanceof \Illuminate\Database\QueryException) {
+        }
+        else if ($e instanceof \Illuminate\Database\QueryException) {
             /**
              * @var \Illuminate\Database\QueryException $e
              */
@@ -212,7 +216,8 @@ class Handler extends ExceptionHandler
                 $error['details'] = $e->getMessage();
             }
             //
-        } else if ($e instanceof \Illuminate\Validation\ValidationException) {
+        }
+        else if ($e instanceof \Illuminate\Validation\ValidationException) {
             /**
              * @var \Illuminate\Validation\ValidationException $e
              */
@@ -225,7 +230,8 @@ class Handler extends ExceptionHandler
                 $error['additional'] = ((array) $e->response->getData());
             }
             //
-        } else { // TODO else if ($e instanceof Laravel-/LumenException) (e.g. \Illuminate\Database\Eloquent\ModelNotFoundException)
+        }
+        else { // TODO else if ($e instanceof Laravel-/LumenException) (e.g. \Illuminate\Database\Eloquent\ModelNotFoundException)
             $error = null;
         }
 
