@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Events\UserRegistered;
 use App\Exceptions\UnauthorizedException;
 use App\Http\Controllers\Controller;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
@@ -27,11 +29,11 @@ class UserController extends Controller
      */
     public function index()
     {
-        if (Gate::denies('index-users')) {
+        if (Gate::denies('users.index')) {
             throw new UnauthorizedException(58);
         }
 
-        return response()->json(['data' => \App\User::all()]);
+        return response()->json(['data' => User::all()]);
     }
 
     /**
@@ -79,8 +81,10 @@ class UserController extends Controller
 
         // Try to create the user and respond with it
         //
-        $newUser = new \App\User($newUserAttributes);
+        $newUser = new User($newUserAttributes);
         $newUser->saveOrFail();
+
+        event(new UserRegistered($newUser));
 
         return response()->json(['data' => $newUser], 201);
     }
@@ -94,11 +98,11 @@ class UserController extends Controller
      */
     public function view(int $id)
     {
-        if (Gate::denies('view-user', $id)) {
+        if (Gate::denies('users.view', $id)) {
             throw new UnauthorizedException(33);
         }
 
-        $user = \App\User::findOrFail($id);
+        $user = User::findOrFail($id);
 
         return response()->json(['data' => $user]);
     }

@@ -40,7 +40,7 @@ App\Http\Controllers\Api\v1\UserController.view | UnauthorizedException | gate d
 
 
 
-App\Http\Middleware\ContentNegotiation.handle | NotAcceptableException | method has body but not as json
+App\Http\Middleware\ContentNegotiation.handle | UnsupportedMediaTypeException | method has body but not as json
 
 App\Http\Controllers\Api\v1\TokenController.refresh | TokenParseException | token was malformed (i.e. token string MUST have 2 dots)
 

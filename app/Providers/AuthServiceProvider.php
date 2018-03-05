@@ -23,11 +23,11 @@ class AuthServiceProvider extends ServiceProvider
             return new Sha256();
         });
 
-        Gate::define('index-users', function (TokenUser $user) {
+        Gate::define('users.index', function (TokenUser $user) {
             return ($user->role === 'admin');
         });
 
-        Gate::define('view-user', function (TokenUser $user, $targetUserId) {
+        Gate::define('users.view', function (TokenUser $user, $targetUserId) {
             return (
                 $user->role === 'admin' ||
                 $user->role === 'mod' ||

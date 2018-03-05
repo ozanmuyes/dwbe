@@ -11,9 +11,33 @@
 |
 */
 
+/**
+ * @var \Illuminate\Database\Eloquent\Factory $factory
+ */
+
+$factory->define(App\TokenUser::class, function () {
+    return [
+        // NOTE No 'id' field
+        'role' => 'user', // This role (`user`) is the least privileged user role
+    ];
+});
+
+$factory->defineAs(App\TokenUser::class, 'admin', function () use ($factory) {
+    return array_merge(
+        $factory->raw(App\TokenUser::class),
+        ['role' => 'admin']
+    );
+});
+
+// NOTE Add other TokenUser roles here (e.g. 'mod', 'dev' etc.)
+
+
 $factory->define(App\User::class, function (Faker\Generator $faker) {
     return [
-        'name' => $faker->name,
+        'first_name' => $faker->firstName,
+        'last_name' => $faker->lastName,
+        'username' => $faker->userName,
         'email' => $faker->email,
+        'password' => $faker->password(),
     ];
 });
