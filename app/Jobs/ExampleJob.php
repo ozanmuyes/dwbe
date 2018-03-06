@@ -4,8 +4,6 @@ namespace App\Jobs;
 
 class ExampleJob extends Job
 {
-    protected $queue = 'default';
-
     /**
      * Create a new job instance.
      *

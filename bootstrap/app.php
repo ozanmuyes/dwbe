@@ -42,7 +42,6 @@ $app->withEloquent();
 */
 
 $app->configure('database');
-$app->configure('services');
 $app->configure('queue');
 $app->configure('mail');
 //
