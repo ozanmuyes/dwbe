@@ -32,6 +32,23 @@ $app->withEloquent();
 
 /*
 |--------------------------------------------------------------------------
+| Configure Application
+|--------------------------------------------------------------------------
+|
+| Here we will configure the application with the files in the
+| 'config' directory. Please note that this is modification
+| to the standard bootstrapping process.
+|
+*/
+
+$app->configure('database');
+$app->configure('services');
+$app->configure('queue');
+$app->configure('mail');
+//
+
+/*
+|--------------------------------------------------------------------------
 | Register Container Bindings
 |--------------------------------------------------------------------------
 |
@@ -89,6 +106,10 @@ $app->register(App\Providers\AuthServiceProvider::class);
 $app->register(App\Providers\EventServiceProvider::class);
 
 $app->register(Illuminate\Redis\RedisServiceProvider::class);
+$app->register(App\Providers\MailServiceProvider::class);
+if ($app->environment() !== 'production') {
+    $app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
+}
 
 /*
 |--------------------------------------------------------------------------
@@ -107,7 +128,6 @@ $app->router->group([
     require __DIR__.'/../routes/web.php';
 });
 
-$app->configure('database');
-//
+$app->make('queue');
 
 return $app;

@@ -27,6 +27,8 @@
 //    return file_get_contents(base_path('public/panel/index.html'));
 //});
 
+use App\Mail\UserRegistered;
+
 $router->group(['prefix' => 'api', 'namespace' => 'Api', 'middleware' => 'negotiation'], function () use ($router) {
     $router->group(['prefix' => 'v1', 'namespace' => 'v1'], function () use ($router) {
         $router->post('token', 'TokenController@create');
@@ -55,3 +57,34 @@ $router->get('/api/pub', function() {
     \Illuminate\Support\Facades\Redis::publish('test', json_encode(['foo' => 'bar']));
 });
 // ----- REDIS TEST ----- REDIS TEST ----- REDIS TEST ----- REDIS TEST ----- REDIS TEST ----- REDIS TEST -----
+
+// ----- QUEUE TEST ----- QUEUE TEST ----- QUEUE TEST ----- QUEUE TEST ----- QUEUE TEST ----- QUEUE TEST -----
+$router->get('/api/job', function () {
+    dispatch(new App\Jobs\ExampleJob);
+
+    return 'immediately OK @ ' . date('Y-m-d H:m:s');
+});
+// ----- QUEUE TEST ----- QUEUE TEST ----- QUEUE TEST ----- QUEUE TEST ----- QUEUE TEST ----- QUEUE TEST -----
+
+// ----- MAIL TEST ----- MAIL TEST ----- MAIL TEST ----- MAIL TEST ----- MAIL TEST ----- MAIL TEST -----
+$router->get('/api/mail', function () {
+    /**
+     * @var \App\User $user
+     */
+    $user = App\User::first();
+
+
+//    /**
+//     * @var \Illuminate\Mail\Mailable $mailable
+//     */
+//    $mailable = new UserRegistered($user);
+//    $mailable = $mailable->onConnection('redis')
+//        ->onQueue('default');
+//
+//    \Illuminate\Support\Facades\Mail::to($user->email)->send($mailable);
+
+
+    \Illuminate\Support\Facades\Mail::to($user->email)
+        ->queue(new UserRegistered($user));
+});
+// ----- MAIL TEST ----- MAIL TEST ----- MAIL TEST ----- MAIL TEST ----- MAIL TEST ----- MAIL TEST -----

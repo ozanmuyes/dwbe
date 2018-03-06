@@ -12,7 +12,7 @@ class UserRegistered extends Event
     /**
      * @var \App\User $user
      */
-    protected $user;
+    public $user;
 
     /**
      * Create a new event instance.

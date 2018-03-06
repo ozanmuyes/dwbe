@@ -4,6 +4,8 @@ namespace App\Jobs;
 
 class ExampleJob extends Job
 {
+    protected $queue = 'default';
+
     /**
      * Create a new job instance.
      *
@@ -21,6 +23,9 @@ class ExampleJob extends Job
      */
     public function handle()
     {
-        //
+        // Actually do the thing
+
+        \Log::info('example job done @ ' . date('Y-m-d H:m:s'));
+        $this->delete();
     }
 }

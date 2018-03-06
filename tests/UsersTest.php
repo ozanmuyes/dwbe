@@ -7,7 +7,7 @@ class UsersTest extends TestCase
     // TODO Test content negotiation - see MiddlewaresTest
 
     /**
-     * @test
+     * @testX
      *
      * Test: GET /api/v1/users
      */
@@ -35,7 +35,7 @@ class UsersTest extends TestCase
     }
 
     /**
-     * @test
+     * @testX
      *
      * Test: GET /api/v1/users/1
      */

@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\TranslatorMock;
+use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,9 +15,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        if ($this->app->environment() !== 'production') {
-            $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
-        }
+        // To enable mail support and do NOT want to use any translation;
+        $this->app->singleton(Translator::class, function () {
+            return new TranslatorMock;
+        });
 
         //
     }
