@@ -128,6 +128,7 @@ $app->router->group([
     require __DIR__.'/../routes/web.php';
 });
 
+// NOTE This is SO important for us to be able to send queued emails
 $app->make('queue');
 
 return $app;

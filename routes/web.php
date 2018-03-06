@@ -73,18 +73,9 @@ $router->get('/api/mail', function () {
      */
     $user = App\User::first();
 
-
-//    /**
-//     * @var \Illuminate\Mail\Mailable $mailable
-//     */
-//    $mailable = new UserRegistered($user);
-//    $mailable = $mailable->onConnection('redis')
-//        ->onQueue('default');
-//
-//    \Illuminate\Support\Facades\Mail::to($user->email)->send($mailable);
-
-
     \Illuminate\Support\Facades\Mail::to($user->email)
         ->queue(new UserRegistered($user));
+
+    return 'immediately OK @ ' . date('Y-m-d H:m:s');
 });
 // ----- MAIL TEST ----- MAIL TEST ----- MAIL TEST ----- MAIL TEST ----- MAIL TEST ----- MAIL TEST -----
