@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Auth\GenericUser;
 
+// TODO Add `username` field to JWT and here
 /**
  * Class TokenUser
  *

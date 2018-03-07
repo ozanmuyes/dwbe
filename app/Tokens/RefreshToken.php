@@ -6,28 +6,23 @@ use App\User;
 
 class RefreshToken extends Token
 {
-
+    public const TYPE = 'refresh';
     /**
-     * Type of the token, can be any string value that has a meaning to the
-     * application. This value will be added to the resultant token's
-     * 'ttp' custom claim.
-     * The type SHOULD be compatible with the 'Security' array in the 'app.php'.
-     * @var string $_type
+     * @inheritdoc
      */
-    protected $_type = 'refresh';
+    protected $type = self::TYPE;
 
     /**
      * RefreshToken constructor.
      *
      * @param \App\User $user
      * @param array $customClaims
+     * @throws \Exception
      */
     public function __construct(User $user, $customClaims = [])
     {
-        $this->_subject = (string) $user->id;
+        parent::__construct((string) $user->id, $customClaims);
 
-        parent::__construct($customClaims);
-
-        $this->_audience = $this->_issuer; // This type of tokens are meant for their issuer
+        $this->audience = $this->getIssuer(); // This type of tokens are meant for their issuer
     }
 }

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Http\Controllers\Api\v1;
 
 use App\Exceptions\BadRequestException;
@@ -92,7 +91,7 @@ class TokenController extends Controller
     public function delete()
     {
         // NOTE Since tokens were stored on the client-side nothing to do here
-        // TODO Maybe remove tokens IDs (`jti`) from the whitelist (if any)
+        // TODO Maybe remove tokens' ID (`jti`) from the whitelist (if any)
     }
 
     /**

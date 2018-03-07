@@ -27,8 +27,6 @@
 //    return file_get_contents(base_path('public/panel/index.html'));
 //});
 
-use App\Mail\UserRegistered;
-
 $router->group(['prefix' => 'api', 'namespace' => 'Api', 'middleware' => 'negotiation'], function () use ($router) {
     $router->group(['prefix' => 'v1', 'namespace' => 'v1'], function () use ($router) {
         $router->post('token', 'TokenController@create');
@@ -74,7 +72,7 @@ $router->get('/api/mail', function () {
     $user = App\User::first();
 
     \Illuminate\Support\Facades\Mail::to($user->email)
-        ->queue(new UserRegistered($user));
+        ->queue(new \App\Mail\WelcomeTheUser($user));
 
     return 'immediately OK @ ' . date('Y-m-d H:m:s');
 });

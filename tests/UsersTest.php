@@ -1,13 +1,13 @@
 <?php
 
+use Laravel\Lumen\Testing\DatabaseMigrations;
+
 class UsersTest extends TestCase
 {
-    use \Laravel\Lumen\Testing\DatabaseMigrations;
-
-    // TODO Test content negotiation - see MiddlewaresTest
+    use DatabaseMigrations;
 
     /**
-     * @testX
+     * @test
      *
      * Test: GET /api/v1/users
      */
@@ -35,7 +35,7 @@ class UsersTest extends TestCase
     }
 
     /**
-     * @testX
+     * @test
      *
      * Test: GET /api/v1/users/1
      */
@@ -71,28 +71,28 @@ class UsersTest extends TestCase
     public function visitor_register_self()
     {
         $createdUserData = (factory(App\User::class)->make())->toArray();
-        $createdUserDataWithPassword = array_merge(
-            $createdUserData, ['password' => $createdUserData['email']]);
-        $persistedUser = array_merge(
-            $createdUserData, ['role' => 'user']);
+        $createdUserDataWithPassword = array_merge($createdUserData, ['password' => $createdUserData['email']]);
+        $persistedUser = array_merge($createdUserData, ['role' => 'user']);
 
 
         $this
             ->expectsEvents([App\Events\UserRegistered::class])
-            ->json('POST', '/api/v1/users', $createdUserDataWithPassword)
+            ->json('POST', '/api/v1/users', $createdUserDataWithPassword, ['Content-Type' => 'application/json'])
             ->seeStatusCode(201)
             ->seeJson($createdUserData)
             ->seeInDatabase('users', $persistedUser)
+            // Do NOT see plain password in the database
             ->notSeeInDatabase('users', ['password' => $createdUserDataWithPassword['password']])
         ;
     }
 
     /**
-     * @testX
+     * @test
      *
      * Test: POST /api/v1/users
      *
-     * An admin creates a new user with all the necessary fields filled correctly.
+     * An admin creates a new user with all the necessary fields filled correctly,
+     * also CAN set a role for the new user.
      */
     public function admin_create_new_user()
     {
@@ -102,22 +102,26 @@ class UsersTest extends TestCase
         $tokenUser = factory(App\TokenUser::class, 'admin')->make();
 
 
-        $createdUserData = [
-            'email' => 'foo@bar.baz',
-            'password' => 'foo@bar.baz',
-            'first_name' => 'TODO Use faker',
-        ];
-        $postRequestHeaders = [
-            'Accept' => 'application/json',
-            'Content-Type' => 'application/json'
-        ];
+        $createdUserData = (factory(App\User::class)->make())->toArray();
+        $createdUserDataWithPasswordAndRole = array_merge(
+            $createdUserData,
+            [
+                'password' => $createdUserData['email'],
+                'role' => 'admin'
+            ]
+        );
+        $persistedUser = array_merge($createdUserData, ['role' => 'admin']);
 
 
         $this
             ->actingAs($tokenUser)
-            ->post('/api/v1/users', $createdUserData, $postRequestHeaders)
+            ->expectsEvents([App\Events\AdminCreated::class])
+            ->json('POST', '/api/v1/users', $createdUserDataWithPasswordAndRole)
             ->seeStatusCode(201)
-            // TODO `seeInDatabase`
+            ->seeJson($createdUserData)
+            ->seeInDatabase('users', $persistedUser)
+            // Do NOT see plain password in the database
+            ->notSeeInDatabase('users', ['password' => $createdUserDataWithPasswordAndRole['password']])
         ;
     }
 }

@@ -15,10 +15,11 @@
  * @var \Illuminate\Database\Eloquent\Factory $factory
  */
 
-$factory->define(App\TokenUser::class, function () {
+$factory->define(App\TokenUser::class, function (Faker\Generator $faker) {
     return [
         // NOTE No 'id' field
         'role' => 'user', // This role (`user`) is the least privileged user role
+//        'username' => $faker->userName,
     ];
 });
 

@@ -23,10 +23,10 @@ class AuthServiceProvider extends ServiceProvider
             return new Sha256();
         });
 
+        // FIXME Rather use policy classes
         Gate::define('users.index', function (TokenUser $user) {
             return ($user->role === 'admin');
         });
-
         Gate::define('users.view', function (TokenUser $user, $targetUserId) {
             return (
                 $user->role === 'admin' ||

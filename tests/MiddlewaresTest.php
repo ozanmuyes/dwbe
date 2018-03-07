@@ -17,6 +17,7 @@ class MiddlewaresTest extends TestCase
     {
         $expectedError = new \App\Exceptions\NotAcceptableException();
 
+
         // NOTE Here we are not using the `->json('GET', ...)` helper to NOT set headers
         $this
             ->get('/api/v1/users')
@@ -48,8 +49,11 @@ class MiddlewaresTest extends TestCase
     {
         $expectedError = new \App\Exceptions\UnsupportedMediaTypeException();
 
+
         // NOTE Here we are not using the `->json('POST', ...)` helper to NOT set headers
         $this
+            // Here we are setting the Accept header in order to pass that check,
+            // because we are asserting another one (i.e. Content Type) here.
             ->post('/api/v1/users', ['random' => 'data'], ['Accept', 'application/json'])
             ->seeStatusCode($expectedError->getCode())
             ->seeJsonStructure([

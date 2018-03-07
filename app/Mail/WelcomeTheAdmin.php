@@ -2,13 +2,14 @@
 
 namespace App\Mail;
 
+use App\TokenUser;
 use App\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class UserRegistered extends Mailable implements ShouldQueue
+class WelcomeTheAdmin extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
@@ -18,14 +19,20 @@ class UserRegistered extends Mailable implements ShouldQueue
     public $user;
 
     /**
+     * @var \App\TokenUser $referenceUser
+     */
+    public $referenceUser;
+
+    /**
      * Create a new message instance.
      *
-     * @param User $user
-     * @return void
+     * @param \App\User $user
+     * @param \App\TokenUser $referenceUser
      */
-    public function __construct(User $user)
+    public function __construct(User $user, TokenUser $referenceUser)
     {
         $this->user = $user;
+        $this->referenceUser = $referenceUser;
     }
 
     /**
@@ -35,6 +42,6 @@ class UserRegistered extends Mailable implements ShouldQueue
      */
     public function build()
     {
-        return $this->view('emails.users.registered');
+        return $this->view('emails.admin.registered');
     }
 }

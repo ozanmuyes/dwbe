@@ -13,8 +13,12 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $listen = [
         \App\Events\UserRegistered::class => [
-            \App\Listeners\SendRegistrationEmail::class,
+            \App\Listeners\SendEmailAddressValidationEmail::class,
             // NOTE Add other listeners for this event here
+        ],
+        \App\Events\AdminCreated::class => [
+            \App\Listeners\SendPasswordSetEmail::class,
+            //
         ],
         // NOTE Add other events here
     ];

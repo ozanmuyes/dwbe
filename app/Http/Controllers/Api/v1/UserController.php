@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Events\AdminCreated;
 use App\Events\UserRegistered;
 use App\Exceptions\UnauthorizedException;
 use App\Http\Controllers\Controller;
@@ -37,6 +38,22 @@ class UserController extends Controller
     }
 
     /**
+     * Check if given user was set and her/his role is 'admin'.
+     *
+     * @param \App\User|\App\TokenUser|null $user
+     *
+     * @return bool
+     */
+    private function isUserAdmin($user)
+    {
+        if ($user === null) {
+            return false;
+        }
+
+        return ($user->role === 'admin');
+    }
+
+    /**
      * Create a new user. Visitors MAY self register themselves
      * or an existing user may create a new user. If visitor
      * self registering it's role will be the database
@@ -63,20 +80,14 @@ class UserController extends Controller
 
         // Check if the visitor self registering.
         //
+        /**
+         * @var \App\TokenUser $user
+         */
         $user = @$request->user();
 
-        // FIXME When role input was unset, the `$newUser` below won't have the 'role' attribute
-        if ($user === null) {
+        if (!$this->isUserAdmin($user)) {
             // User self registering - use database default
             unset($newUserAttributes['role']);
-        } else {
-            // An existing user creating a new user
-            if ($user->role === 'admin') {
-                // Can decide new user's role
-            } else {
-                // Can NOT decide new user's role - use database default
-                unset($newUserAttributes['role']);
-            }
         }
 
         // Try to create the user and respond with it
@@ -84,8 +95,27 @@ class UserController extends Controller
         $newUser = new User($newUserAttributes);
         $newUser->saveOrFail();
 
-        event(new UserRegistered($newUser));
+        // Decide and fire related event
+        //
+        /**
+         * @var \App\Events\Event $event
+         */
+        $event = null;
 
+        if ($this->isUserAdmin($newUser)) {
+            // TODO Create 'password set token' token and link here (e.g. /password/set/[TOKEN] on front-end application)
+
+            $event = new AdminCreated($newUser, $user);
+        } else {
+            // TODO Create 'validation token' and link here (e.g. /validate/[TOKEN] on front-end application)
+
+            $event = new UserRegistered($newUser);
+        }
+
+        event($event);
+
+        // Return the response (immediately)
+        //
         return response()->json(['data' => $newUser], 201);
     }
 
