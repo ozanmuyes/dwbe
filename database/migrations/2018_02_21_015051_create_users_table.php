@@ -24,11 +24,18 @@ class CreateUsersTable extends Migration
             $table->string('email')
                 ->unique()
                 ->nullable(false);
+            $table->string('password_set_token', 511)
+                ->nullable();
             $table->string('password')
-                ->nullable(false);
+                ->nullable();
             $table->string('role')
                 ->default('user'); // 'admin', 'mod' or 'user'
             $table->timestamps();
+            $table->string('verification_token', 511)
+                ->nullable();
+            $table->timestamp('verified_at')
+                ->nullable();
+            // TODO Add 'is_enabled' column AND add corresponding 'scope' for it
             $table->softDeletes();
         });
     }

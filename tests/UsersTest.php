@@ -4,7 +4,7 @@ use Laravel\Lumen\Testing\DatabaseMigrations;
 
 class UsersTest extends TestCase
 {
-    use DatabaseMigrations;
+//    use DatabaseMigrations;
 
     /**
      * @test
@@ -106,7 +106,7 @@ class UsersTest extends TestCase
         $createdUserDataWithPasswordAndRole = array_merge(
             $createdUserData,
             [
-                'password' => $createdUserData['email'],
+                'password' => $createdUserData['email'], // The password MUST be omitted
                 'role' => 'admin'
             ]
         );

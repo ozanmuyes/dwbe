@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Tokens\Validators\Validator;
 use App\TokenUser;
 use Auth;
 use Illuminate\Http\Request;
@@ -12,22 +13,16 @@ use Lcobucci\JWT\Signer\Hmac\Sha256;
 
 class AuthServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
-    public function register()
+    private function registerAbilities()
+        /** @noinspection PhpUndefinedMethodInspection */
     {
-        $this->app->singleton('JwtSigner', function () {
-            return new Sha256();
-        });
-
-        // FIXME Rather use policy classes
-        Gate::define('users.index', function (TokenUser $user) {
+        // Gates for user controller
+        //
+        Gate::define('user.index', function (TokenUser $user) {
             return ($user->role === 'admin');
         });
-        Gate::define('users.view', function (TokenUser $user, $targetUserId) {
+
+        Gate::define('user.view', function (TokenUser $user, $targetUserId) {
             return (
                 $user->role === 'admin' ||
                 $user->role === 'mod' ||
@@ -39,11 +34,66 @@ class AuthServiceProvider extends ServiceProvider
     }
 
     /**
+     * Register any application services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->app->singleton('JwtSigner', function () {
+            return new Sha256();
+        });
+
+        $this->registerAbilities();
+    }
+
+    /**
      * Boot the authentication services for the application.
      *
      * @return void
      */
     public function boot()
+    {
+        Auth::viaRequest('api', function (Request $request) {
+            // Get the (access) token and validate it
+            //
+            $tokenFromHeader = $request->bearerToken();
+            if ($tokenFromHeader === null) {
+                return null;
+            }
+
+            /** @var \Lcobucci\JWT\Token $token */
+            $token = Validator::validate($tokenFromHeader);
+
+            // Check for required claims
+            //
+            if (
+                !$token->hasClaim('sub') ||
+                !$token->hasClaim('rol') ||
+                //
+                false
+            ) {
+                return null;
+            }
+
+            // Create the token user and return
+            //
+            $user = new TokenUser([
+                'id' => (int) $token->getClaim('sub'),
+                'role' => $token->getClaim('rol'),
+                // TODO Add other claims here - don't forget to update TokenUser read-only properties
+            ]);
+
+            return $user;
+        });
+    }
+
+    /**
+     * Boot the authentication services for the application.
+     *
+     * @return void
+     */
+    public function bootOld()
     {
         // Here you may define how you wish users to be authenticated for your Lumen
         // application. The callback which receives the incoming request instance
@@ -58,9 +108,7 @@ class AuthServiceProvider extends ServiceProvider
                 return null;
             }
 
-            /**
-             * @var \Lcobucci\JWT\Token $token
-             */
+            /** @var \Lcobucci\JWT\Token $token */
             $token = null;
             try {
                 $token = (new Parser())->parse($tokenFromHeader);
@@ -70,9 +118,7 @@ class AuthServiceProvider extends ServiceProvider
 
             // Verify the (access) token
             //
-            /**
-             * @var \Lcobucci\JWT\Signer $signer
-             */
+            /** @var \Lcobucci\JWT\Signer $signer */
             $signer = $this->app->make('JwtSigner');
             if (!$token->verify($signer, env('JWT_SECRET', env('APP_KEY')))) {
                 return null;

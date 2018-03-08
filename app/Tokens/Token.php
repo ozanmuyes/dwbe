@@ -34,6 +34,7 @@ abstract class Token
      * Issuer claim's value. This will be automatically set on instantiation.
      * Its value can be changed but the default is decided by environment
      * variables.
+     *
      * @var string $issuer
      */
     private $issuer;
@@ -58,15 +59,10 @@ abstract class Token
      *
      * @param string $subject
      * @param array $customClaims
-     * @throws \Exception Throws an exception if issuer was not set
      */
     public function __construct($subject, $customClaims = [])
     {
-        $this->issuer = env('APP_NAME');
-        if ($this->issuer === null) {
-            throw new \Exception('Token issuer MUST be set.');
-        }
-
+        $this->subject = $subject;
         // TODO Initialize other base variables (claims)
 
         $this->builder = (new Builder())
@@ -85,8 +81,19 @@ abstract class Token
         }
     }
 
+    /**
+     * @return string
+     */
     protected function getIssuer(): string
     {
+        if ($this->issuer === null) {
+            $this->issuer = env('JWT_ISSUER', env('APP_NAME', ''));
+        }
+
+        if ($this->issuer === '') {
+            // TODO Log warning here - but continue with the empty string
+        }
+
         return $this->issuer;
     }
 

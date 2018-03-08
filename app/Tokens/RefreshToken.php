@@ -17,7 +17,6 @@ class RefreshToken extends Token
      *
      * @param \App\User $user
      * @param array $customClaims
-     * @throws \Exception
      */
     public function __construct(User $user, $customClaims = [])
     {

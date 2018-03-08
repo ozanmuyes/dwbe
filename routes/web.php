@@ -35,6 +35,7 @@ $router->group(['prefix' => 'api', 'namespace' => 'Api', 'middleware' => 'negoti
 
         $router->get('users', 'UserController@index');
         $router->post('users', 'UserController@create');
+        $router->post('users/password', 'UsersController@setPassword');
         $router->get('users/{id}', 'UserController@view');
     });
 

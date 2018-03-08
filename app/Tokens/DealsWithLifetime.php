@@ -24,7 +24,6 @@ trait DealsWithLifetime
      * Set token instance's lifetime in ms.
      *
      * @param int $lifetime
-     * @throws \Exception Throws an exception when given lifetime is wrong
      */
     function setLifetime(int $lifetime)
     {
@@ -35,8 +34,8 @@ trait DealsWithLifetime
             return;
         }
 
-        if ($lifetime === 0) {
-            throw new \Exception('This token supposed to has lifetime but set to 0.');
+        if ($lifetime < 1000) {
+            return;
         }
 
         $this->lifetime = $lifetime;

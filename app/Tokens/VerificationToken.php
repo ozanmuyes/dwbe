@@ -2,18 +2,18 @@
 
 namespace App\Tokens;
 
-class PasswordSetToken extends Token implements HasLifetime
+class VerificationToken extends Token implements HasLifetime
 {
     use DealsWithLifetime;
 
-    public const TYPE = 'password_set';
+    public const TYPE = 'verification';
     /**
      * @inheritdoc
      */
     protected $type = self::TYPE;
 
     /**
-     * PasswordSetToken constructor.
+     * VerificationToken constructor.
      *
      * Here we are expecting user's email address since the new user wasn't saved
      * in the database yet.
@@ -23,7 +23,7 @@ class PasswordSetToken extends Token implements HasLifetime
      */
     public function __construct(string $email, $customClaims = [])
     {
-        $this->setLifetime((int) env('JWT_PWS_LIFE'));
+        $this->setLifetime((int) env('JWT_VRF_LIFE'));
 
         // TODO Consider 'for' claim
         $customClaims['aud'] = $this->getIssuer();

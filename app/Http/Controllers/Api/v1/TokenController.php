@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Exceptions\BadRequestException;
-use App\Exceptions\TokenParseException;
+use App\Tokens\Exceptions\TokenParseException;
 use App\Http\Controllers\Controller;
 use App\Tokens\AccessToken;
 use App\Tokens\RefreshToken;
@@ -59,26 +59,9 @@ class TokenController extends Controller
 
         // Create tokens
         //
-        /**
-         * @var \App\Tokens\AccessToken $accessToken
-         */
-        $accessToken = null;
-        try {
-            // TODO Consider 'for' field for the token audience
-            $accessToken = new AccessToken($user, 'app://dwfe');
-        } catch (\Exception $e) {
-            // TODO throw custom (API) exception
-        }
-
-        /**
-         * @var \App\Tokens\RefreshToken $refreshToken
-         */
-        $refreshToken = null;
-        try {
-            $refreshToken = new RefreshToken($user);
-        } catch (\Exception $e) {
-            // TODO throw custom (API) exception
-        }
+        // TODO Consider 'for' field for the token audience
+        $accessToken = new AccessToken($user, 'app://dwfe');
+        $refreshToken = new RefreshToken($user);
 
         return response()->json([
             'data' => [
@@ -101,7 +84,7 @@ class TokenController extends Controller
      *
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\TokenParseException
+     * @throws \App\Tokens\Exceptions\TokenParseException
      * @throws \App\Exceptions\BadRequestException
      */
     public function refresh(Request $request)
@@ -112,6 +95,7 @@ class TokenController extends Controller
             throw new BadRequestException(17);
         }
 
+        // FIXME [TKNVLDTR] Use token validator instead
         /**
          * @var \Lcobucci\JWT\Token $refreshToken
          */

@@ -22,13 +22,14 @@ class AccessToken extends Token implements HasLifetime
         //
     ];
 
+    // TODO Consider creating refresh token from an access token (e.g. static ::fromRefreshToken method)
+
     /**
      * AccessToken constructor.
      *
      * @param \App\User $user
      * @param string|array $audience
      * @param array $customClaims
-     * @throws \Exception
      */
     public function __construct(User $user, $audience, $customClaims = [])
     {

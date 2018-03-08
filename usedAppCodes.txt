@@ -6,7 +6,7 @@ App\Http\Controllers\Api\v1\TokenController.create | BadRequestException | no pa
 
 
 
-
+App\Tokens\Validators::validate | TokenUnknownTypeException | no token type ('ttp') claim
 
 
 
@@ -36,20 +36,20 @@ App\Http\Controllers\Api\v1\UserController.view | UnauthorizedException | gate d
 
 
 
-
+App\Tokens\Validators::validate | TokenValidationException | token was invalid but the specific validator didn't throw an exception
 
 
 
 App\Http\Middleware\ContentNegotiation.handle | UnsupportedMediaTypeException | method has body but not as json
 
-App\Http\Controllers\Api\v1\TokenController.refresh | TokenParseException | token was malformed (i.e. token string MUST have 2 dots)
+App\Tokens\Validators::validate | TokenParseException | token was malformed (i.e. token string MUST have 2 dots)
 
 
 
 
 
 
-
+App\Tokens\Validators::validate | TokenUnknownTypeException | unknown token type ('ttp'), the corresponding validator class wasn't found
 
 
 
@@ -64,5 +64,5 @@ App\Http\Controllers\Api\v1\UserController.index | UnauthorizedException | gate 
 
 
 
-App\Http\Controllers\Api\v1\TokenController.refresh | TokenParseException | cannot encode token as json
+App\Tokens\Validators::validate | TokenParseException | cannot encode token as json
 App\Http\Controllers\Api\v1\TokenController.create | BadRequestException | no email on request body
