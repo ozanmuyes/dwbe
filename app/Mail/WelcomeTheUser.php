@@ -12,20 +12,24 @@ class WelcomeTheUser extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    /**
-     * @var \App\User $user
-     */
+    /** @var \App\User $user */
     public $user;
+
+    /** @var string $verificationLink */
+    public $verificationLink;
 
     /**
      * Create a new message instance.
      *
-     * @param User $user
-     * @return void
+     * @param \App\User $user
+     * @param string $verificationLink
      */
-    public function __construct(User $user)
+    public function __construct(User $user, $verificationLink)
     {
         $this->user = $user;
+        $this->verificationLink = $verificationLink;
+
+        $this->subject('Welcome to DWBE');
     }
 
     /**

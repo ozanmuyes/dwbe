@@ -82,9 +82,7 @@ class UserController extends Controller
 
         // Check if the visitor self registering.
         //
-        /**
-         * @var \App\TokenUser $user
-         */
+        /** @var \App\TokenUser $user */
         $user = @$request->user();
 
         if (!$this->isUserAdmin($user)) {
@@ -102,30 +100,12 @@ class UserController extends Controller
 
             // Create and set the password set token
             //
-            /**
-             * @var \App\Tokens\PasswordSetToken $passwordSetToken
-             */
-            $passwordSetToken = null;
-            try {
-                $passwordSetToken = new PasswordSetToken($newUserAttributes['email']);
-            } catch (\Exception $e) {
-                // TODO throw custom (API) exception
-            }
-
+            $passwordSetToken = new PasswordSetToken($newUserAttributes['email']);
             $newUserAttributes['password_set_token'] = (string) $passwordSetToken;
         } else {
-            // Create and set the validation token
+            // Create and set the verification token
             //
-            /**
-             * @var \App\Tokens\VerificationToken() $verificationToken
-             */
-            $verificationToken = null;
-            try {
-                $verificationToken = new VerificationToken($newUserAttributes['email']);
-            } catch (\Exception $e) {
-                // TODO throw custom (API) exception
-            }
-
+            $verificationToken = new VerificationToken($newUserAttributes['email']);
             $newUserAttributes['verification_token'] = (string) $verificationToken;
         }
 
@@ -136,21 +116,9 @@ class UserController extends Controller
 
         // Decide and fire related event
         //
-        /**
-         * @var \App\Events\Event $event
-         */
-        $event = null;
-
-        if ($this->isUserAdmin($newUser)) {
-            // TODO Create 'password set token' token and link here (e.g. /password/set/[TOKEN] on front-end application)
-
-            $event = new AdminCreated($newUser, $user);
-        } else {
-            // TODO Create 'validation token' and link here (e.g. /validate/[TOKEN] on front-end application)
-
-            $event = new UserRegistered($newUser);
-        }
-
+        $event = ($this->isUserAdmin($newUser))
+            ? new AdminCreated($newUser, $user)
+            : new UserRegistered($newUser);
         event($event);
 
         // Return the response (immediately)

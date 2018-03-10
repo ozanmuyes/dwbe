@@ -4,7 +4,7 @@ use Laravel\Lumen\Testing\DatabaseMigrations;
 
 class UsersTest extends TestCase
 {
-//    use DatabaseMigrations;
+    use DatabaseMigrations;
 
     /**
      * @test
@@ -13,16 +13,14 @@ class UsersTest extends TestCase
      */
     public function list_users_with_necessary_fields()
     {
-        /**
-         * @var \App\TokenUser $tokenUser
-         */
+        /** @var \App\TokenUser $tokenUser */
         $tokenUser = factory(App\TokenUser::class, 'admin')->make();
 
 
-        /**
-         * @var \Illuminate\Database\Eloquent\Collection $manufacturedUsers
-         */
-        $manufacturedUsers = factory(App\User::class, 2)->create();
+        /** @var \Illuminate\Database\Eloquent\Collection $manufacturedUsers */
+        $manufacturedUsers = factory(App\User::class, 2)->create([
+            'verified_at' => \Carbon\Carbon::now(),
+        ]);
 
 
         $this
@@ -41,16 +39,14 @@ class UsersTest extends TestCase
      */
     public function get_user_with_necessary_fields()
     {
-        /**
-         * @var \App\TokenUser $tokenUser
-         */
+        /** @var \App\TokenUser $tokenUser */
         $tokenUser = factory(App\TokenUser::class, 'admin')->make();
 
 
-        /**
-         * @var \App\User $manufacturedUser
-         */
-        $manufacturedUser = factory(App\User::class)->create();
+        /** @var \App\User $manufacturedUser */
+        $manufacturedUser = factory(App\User::class)->create([
+            'verified_at' => \Carbon\Carbon::now(),
+        ]);
 
 
         $this
@@ -96,9 +92,7 @@ class UsersTest extends TestCase
      */
     public function admin_create_new_user()
     {
-        /**
-         * @var \App\TokenUser $tokenUser
-         */
+        /** @var \App\TokenUser $tokenUser */
         $tokenUser = factory(App\TokenUser::class, 'admin')->make();
 
 

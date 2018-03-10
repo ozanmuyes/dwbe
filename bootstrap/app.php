@@ -19,9 +19,7 @@ try {
 |
 */
 
-/**
- * @var Laravel\Lumen\Application $app
- */
+/** @var \Laravel\Lumen\Application $app */
 $app = new Laravel\Lumen\Application(
     realpath(__DIR__.'/../')
 );
@@ -107,6 +105,12 @@ $app->register(App\Providers\EventServiceProvider::class);
 $app->register(Illuminate\Redis\RedisServiceProvider::class);
 $app->register(App\Providers\MailServiceProvider::class);
 if ($app->environment() !== 'production') {
+    app('config')->set('app.aliases', [
+//        'Validator' => Illuminate\Support\Facades\Validator::class,
+//        'Eloquent' => Illuminate\Database\Eloquent\Model::class,
+        'Gate' => Illuminate\Support\Facades\Gate::class
+    ]);
+
     $app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
 }
 
@@ -123,7 +127,7 @@ if ($app->environment() !== 'production') {
 
 $app->router->group([
     'namespace' => 'App\Http\Controllers',
-], function ($router) {
+], function (/** @noinspection PhpUnusedParameterInspection */ $router) {
     require __DIR__.'/../routes/web.php';
 });
 

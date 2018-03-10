@@ -2,7 +2,7 @@
 
 namespace App\Tokens\Validators;
 
-// TODO Write validators for other tokens (other than access token) (i.e. refresh, password set, validation etc.)
+// TODO Write validators for other tokens (other than access token) (i.e. refresh, password set, verification etc.)
 
 interface ValidatesTokens
 {

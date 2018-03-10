@@ -37,7 +37,8 @@ class AccessToken extends Token implements HasLifetime
 
         $this->setLifetime((int) env('JWT_ACC_LIFE'));
 
-        $customClaims['rol'] = $user->role; // TODO Test here
+        $customClaims['rol'] = $user->role;
+        $customClaims['unm'] = $user->username;
         parent::__construct((string) $user->id, $customClaims);
 
         // Superseded by line 39

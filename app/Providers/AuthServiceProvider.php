@@ -70,6 +70,7 @@ class AuthServiceProvider extends ServiceProvider
             if (
                 !$token->hasClaim('sub') ||
                 !$token->hasClaim('rol') ||
+                !$token->hasClaim('unm') ||
                 //
                 false
             ) {
@@ -81,6 +82,7 @@ class AuthServiceProvider extends ServiceProvider
             $user = new TokenUser([
                 'id' => (int) $token->getClaim('sub'),
                 'role' => $token->getClaim('rol'),
+                'username' => $token->getClaim('unm'),
                 // TODO Add other claims here - don't forget to update TokenUser read-only properties
             ]);
 

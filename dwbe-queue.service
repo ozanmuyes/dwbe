@@ -1,0 +1,13 @@
+[Unit]
+Description=DWBE Queue Worker
+After=redis.service
+
+[Service]
+User=www-data
+Group=www-data
+ExecStart=/usr/bin/php /home/ozan/Code/dwbe/artisan queue:work --tries=3 --sleep=3 --env=production
+# See https://gist.github.com/thomasjsn/bc7d3a3b81d0118f6e89eef7d43f66f3#gistcomment-2170213 for always;
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

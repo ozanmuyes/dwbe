@@ -11,9 +11,7 @@
 |
 */
 
-/**
- * @var $router Laravel\Lumen\Routing\Router
- */
+/** @var Laravel\Lumen\Routing\Router $router */
 
 // NOTE These (front-end application) routes has been commented out in favor of OpenResty (NGINX).
 //$router->get('/', function () {
@@ -67,9 +65,7 @@ $router->get('/api/job', function () {
 
 // ----- MAIL TEST ----- MAIL TEST ----- MAIL TEST ----- MAIL TEST ----- MAIL TEST ----- MAIL TEST -----
 $router->get('/api/mail', function () {
-    /**
-     * @var \App\User $user
-     */
+    /** @var \App\User $user */
     $user = App\User::first();
 
     \Illuminate\Support\Facades\Mail::to($user->email)
@@ -78,3 +74,14 @@ $router->get('/api/mail', function () {
     return 'immediately OK @ ' . date('Y-m-d H:m:s');
 });
 // ----- MAIL TEST ----- MAIL TEST ----- MAIL TEST ----- MAIL TEST ----- MAIL TEST ----- MAIL TEST -----
+
+// --- DEL --- DEL --- DEL --- DEL --- DEL --- DEL --- DEL --- DEL --- DEL ---
+$router->get('/api/mail/welcome-the-user', function () {
+    /** @var \App\User $user */
+    $user = factory(\App\User::class)->make([
+        'email' => 'john@does.co'
+    ]);
+
+    return new \App\Mail\WelcomeTheUser($user, 'https://foo.bar/baz?token=asu.geif.laugf');
+});
+// --- DEL --- DEL --- DEL --- DEL --- DEL --- DEL --- DEL --- DEL --- DEL ---

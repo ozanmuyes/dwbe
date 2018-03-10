@@ -21,6 +21,11 @@ class AdminCreated extends Event
     public $referenceUser;
 
     /**
+     * @var string $passwordSetLink
+     */
+    public $passwordSetLink;
+
+    /**
      * Create a new event instance.
      *
      * @param \App\User $user
@@ -30,7 +35,7 @@ class AdminCreated extends Event
     {
         $this->user = $user;
         $this->referenceUser = $referenceUser;
-
-        //
+        // Password set link MUST point to the front-end application
+        $this->passwordSetLink = url('/me/password') . '?' . http_build_query(['token' => $user->password_set_token]);
     }
 }

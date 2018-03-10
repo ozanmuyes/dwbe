@@ -5,8 +5,7 @@ namespace App\Listeners;
 use App\Events\UserRegistered;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-// TODO Also in another (before) event OR in the record creation process create a (verification) token
-class SendEmailAddressValidationEmail implements ShouldQueue
+class SendEmailAddressVerificationEmail implements ShouldQueue
 {
     /**
      * Handle the event.
@@ -17,6 +16,6 @@ class SendEmailAddressValidationEmail implements ShouldQueue
     public function handle(UserRegistered $event)
     {
         \Illuminate\Support\Facades\Mail::to($event->user->email)
-            ->queue(new \App\Mail\WelcomeTheUser($event->user));
+            ->queue(new \App\Mail\WelcomeTheUser($event->user, $event->verificationLink));
     }
 }

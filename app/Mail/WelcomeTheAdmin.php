@@ -13,26 +13,29 @@ class WelcomeTheAdmin extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    /**
-     * @var \App\User $user
-     */
+    /** @var \App\User $user */
     public $user;
 
-    /**
-     * @var \App\TokenUser $referenceUser
-     */
+    /** @var \App\TokenUser $referenceUser */
     public $referenceUser;
+
+    /** @var string $passwordSetLink */
+    public $passwordSetLink;
 
     /**
      * Create a new message instance.
      *
      * @param \App\User $user
      * @param \App\TokenUser $referenceUser
+     * @param string $passwordSetLink
      */
-    public function __construct(User $user, TokenUser $referenceUser)
+    public function __construct(User $user, TokenUser $referenceUser, $passwordSetLink)
     {
         $this->user = $user;
         $this->referenceUser = $referenceUser;
+        $this->passwordSetLink = $passwordSetLink;
+
+        $this->subject('Welcome to DWBE');
     }
 
     /**

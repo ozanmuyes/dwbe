@@ -16,6 +16,6 @@ class SendPasswordSetEmail implements ShouldQueue
     public function handle(AdminCreated $event)
     {
         \Illuminate\Support\Facades\Mail::to($event->user->email)
-            ->queue(new \App\Mail\WelcomeTheAdmin($event->user, $event->referenceUser));
+            ->queue(new \App\Mail\WelcomeTheAdmin($event->user, $event->referenceUser, $event->passwordSetLink));
     }
 }

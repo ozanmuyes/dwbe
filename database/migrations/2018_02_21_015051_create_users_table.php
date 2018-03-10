@@ -35,7 +35,8 @@ class CreateUsersTable extends Migration
                 ->nullable();
             $table->timestamp('verified_at')
                 ->nullable();
-            // TODO Add 'is_enabled' column AND add corresponding 'scope' for it
+            $table->boolean('is_enabled')
+                ->default(true);
             $table->softDeletes();
         });
     }
